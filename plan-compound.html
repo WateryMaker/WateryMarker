@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compound Interest Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Prompt', sans-serif; background: linear-gradient(to bottom right, #d2f1f9, #e6fcef); margin: 0; padding: 20px; }
+    .topbar { display:flex; justify-content:flex-end; align-items:center; gap:10px; margin-bottom: 8px; }
+    .back-btn { background:#f3f4f6; border:none; padding:6px 12px; font-size:14px; color:#374151; border-radius:8px; cursor:pointer; }
+    h1 { text-align: center; color: #0369a1; margin-top: 8px; }
+    .form-group { margin: 10px 0; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input { width: 100%; padding: 10px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; }
+    .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .btn { margin-top: 14px; background-color: #10b981; color: white; border: none; padding: 12px; width: 100%; font-size: 16px; border-radius: 6px; cursor: pointer; }
+    .btn.save { background-color: #0ea5e9; }
+    .lang-select { padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; color: #0369a1; }
+    canvas { margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <button id="btn-back" class="back-btn">← Dashboard</button>
+    <select class="lang-select" id="lang-select" onchange="changeLanguage()">
+      <option value="en">English</option>
+      <option value="th">ไทย</option>
+    </select>
+  </div>
+
+  <h1 id="title">Compound Interest Calculator</h1>
+  <div class="container">
+    <div class="form-group">
+      <label id="label-principal" for="principal">Initial Amount (THB)</label>
+      <input type="text" id="principal" value="100" oninput="formatNumber(this)">
+    </div>
+    <div class="form-group">
+      <label id="label-rate" for="rate">Annual Return Rate (%)</label>
+      <input type="text" id="rate" value="8" oninput="formatNumber(this)">
+    </div>
+    <div class="form-group">
+      <label id="label-years" for="years">Investment Period (years)</label>
+      <input type="text" id="years" value="20" oninput="formatNumber(this)">
+    </div>
+
+    <button class="btn" id="btn-calc" onclick="calculateCompound()">Calculate</button>
+    <button class="btn save" id="btn-save">Save Calculation</button>
+
+    <canvas id="compoundChart" width="600" height="300"></canvas>
+    <div id="finalValue" style="text-align:center; font-weight:bold; margin-top: 20px;"></div>
+  </div>
+
+  <!-- ===== MMMHistory (Guest-aware v2) ===== -->
+  <script>
+    (function(){
+      if (window.MMMHistory && window.MMMHistory.__v === '2') return;
+      const KEY = "mmm_history_v1";
+      const isUser = ()=> (localStorage.getItem('mmm_session') === 'user');
+
+      function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+      function getAll(){ try{ return JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ return []; } }
+      function setAll(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
+
+      function save(entry){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || localStorage.getItem('language') || 'en';
+          alert(lang==='th'
+            ? 'โหมดผู้เยี่ยมชม: โปรดเข้าสู่ระบบเพื่อบันทึกประวัติ'
+            : 'Guest mode: Please log in to save your history.');
+          return null;
+        }
+        const item = { id: uid(), createdAt: new Date().toISOString(), ...entry };
+        const list = getAll(); list.unshift(item); setAll(list); return item.id;
+      }
+      function remove(id){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || 'en';
+          alert(lang==='th' ? 'โหมดผู้เยี่ยมชม: ไม่สามารถลบรายการได้' : 'Guest mode: Delete is disabled.');
+          return;
+        }
+        setAll(getAll().filter(x=>x.id!==id));
+      }
+      function clear(){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || 'en';
+          alert(lang==='th' ? 'โหมดผู้เยี่ยมชม: ไม่สามารถลบทั้งหมดได้' : 'Guest mode: Clear all is disabled.');
+          return;
+        }
+        localStorage.removeItem(KEY);
+      }
+      function get(id){ return getAll().find(x=>x.id===id); }
+
+      window.MMMHistory = { __v:'2', save, getAll, get, remove, clear, isUser };
+    })();
+  </script>
+
+  <script>
+    // ---- i18n ----
+    const text = {
+      en: {
+        title: "Compound Interest Calculator",
+        "label-principal": "Initial Amount (THB)",
+        "label-rate": "Annual Return Rate (%)",
+        "label-years": "Investment Period (years)",
+        "btn-calc": "Calculate",
+        "btn-save": "Save Calculation",
+        chartLabel: "Wealth (THB)",
+        chartTitle: "Growth of Wealth Over Time",
+        finalValue: "Final Amount: ",
+        savedMsg: "Saved!",
+        back: "← Dashboard",
+        currency: "THB",
+      },
+      th: {
+        title: "เครื่องคำนวณดอกเบี้ยทบต้น",
+        "label-principal": "จำนวนเงินตั้งต้น (บาท)",
+        "label-rate": "อัตราผลตอบแทนต่อปี (%)",
+        "label-years": "ระยะเวลาการลงทุน (ปี)",
+        "btn-calc": "คำนวณ",
+        "btn-save": "บันทึกการคำนวณ",
+        chartLabel: "ความมั่งคั่ง (บาท)",
+        chartTitle: "การเติบโตของเงินในอนาคต",
+        finalValue: "จำนวนเงินสุดท้าย: ",
+        savedMsg: "บันทึกแล้ว!",
+        back: "← กลับหน้า Dashboard",
+        currency: "บาท",
+      }
+    };
+
+    // ---- Utilities: format & parse ----
+    const fmt = (n)=> Number(n||0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+    function formatNumber(input){
+      const raw = (input.value || "").replace(/,/g,'');
+      if(raw === "" || isNaN(raw)) return;
+      const parts = raw.split('.');
+      const intPart = parts[0];
+      const decPart = parts[1] !== undefined ? '.' + parts[1] : '';
+      input.value = Number(intPart).toLocaleString() + decPart;
+    }
+    const parseNum = (val)=> Number((val||"").toString().replace(/,/g,'')) || 0;
+
+    let lastInputs = null;
+    let lastResults = null;
+
+    function changeLanguage() {
+      const lang = document.getElementById("lang-select").value;
+      const t = text[lang];
+      // persist language for cross pages / guest messages
+      localStorage.setItem('lang', lang);
+      localStorage.setItem('language', lang);
+
+      document.getElementById("title").innerText = t.title;
+      document.getElementById("label-principal").innerText = t["label-principal"];
+      document.getElementById("label-rate").innerText = t["label-rate"];
+      document.getElementById("label-years").innerText = t["label-years"];
+      document.getElementById("btn-calc").innerText = t["btn-calc"];
+      document.getElementById("btn-save").innerText = t["btn-save"];
+      document.getElementById("btn-back").innerText = t.back;
+      calculateCompound(); // update chart/labels
+    }
+
+    function calculateCompound() {
+      const P = parseNum(document.getElementById('principal').value);
+      const r = parseNum(document.getElementById('rate').value) / 100;
+      const years = parseNum(document.getElementById('years').value);
+      const lang = document.getElementById("lang-select").value;
+      const tData = text[lang];
+
+      const labels = [];
+      const series = [];
+      for (let year = 0; year <= years; year++) {
+        labels.push(year);
+        series.push(P * Math.pow(1 + r, year));
+      }
+
+      const finalAmount = series[series.length - 1] || 0;
+      document.getElementById("finalValue").innerText =
+        `${tData.finalValue}${finalAmount.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} ${tData.currency}`;
+
+      // prepare for Save
+      lastInputs = { principal: P, ratePct: (r*100), years };
+      lastResults = {
+        finalAmount: Math.round(finalAmount),
+        series: labels.map((y,i)=>({ year:y, value: Math.round(series[i]) }))
+      };
+
+      const ctx = document.getElementById('compoundChart').getContext('2d');
+      if (window.chartInstance) window.chartInstance.destroy();
+      window.chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: tData.chartLabel,
+            data: series,
+            fill: true,
+            backgroundColor: 'rgba(34,197,94,0.2)',
+            borderColor: '#10b981',
+            tension: 0.3
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: 'bottom' },
+            title: { display: true, text: tData.chartTitle },
+            tooltip: {
+              callbacks: {
+                label: function(context){
+                  const v = context.parsed.y;
+                  return `${tData.chartLabel}: ${fmt(v)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { callback: (value)=> fmt(value) }
+            },
+            x: {
+              ticks: { callback: (_, index)=> labels[index].toLocaleString() }
+            }
+          }
+        }
+      });
+    }
+
+    // Save to History (guest-aware)
+    document.getElementById("btn-save").addEventListener("click", ()=>{
+      if (!lastResults) calculateCompound(); // ensure latest
+      const lang = document.getElementById("lang-select").value;
+      const title = (lang === "th")
+        ? `ดอกเบี้ยทบต้น ${lastInputs.ratePct}% • ${lastInputs.years.toLocaleString()} ปี`
+        : `Compound ${lastInputs.ratePct}% • ${lastInputs.years.toLocaleString()}y`;
+
+      const id = MMMHistory.save({
+        type: "compound",
+        title,
+        inputs: lastInputs,
+        results: lastResults,
+        meta: { page: "plan-compound.html", version: "1.0" }
+      });
+
+      if (id) {
+        alert(text[lang].savedMsg);
+      }
+      // ถ้าเป็น guest MMMHistory จะ alert ให้เองและคืน null
+    });
+
+    // Back to Dashboard (prefer history, fallback to dashboard.php)
+    (function(){
+      const DASHBOARD = 'dashboard.php'; // ใช้ .php ตามที่คุณใช้ในโปรเจกต์
+      document.getElementById('btn-back').addEventListener('click', (e)=>{
+        e.preventDefault();
+        if (document.referrer) {
+          history.back();
+          setTimeout(()=>{ // fallback หากเบราว์เซอร์ไม่ย้อนกลับ
+            if (document.referrer === "" || document.referrer === location.href) {
+              location.href = DASHBOARD;
+            }
+          }, 200);
+        } else {
+          location.href = DASHBOARD;
+        }
+      });
+    })();
+
+    window.onload = () => {
+      // sync language (ถ้ามีจากหน้าอื่น)
+      const savedLang = localStorage.getItem('lang') || localStorage.getItem('language') || 'en';
+      document.getElementById("lang-select").value = savedLang;
+      changeLanguage();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Retirement Planner</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(to bottom right, #e0f7fa, #f1f8e9);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; color: #00796b; }
+    .topbar { display:flex; justify-content:flex-end; gap:8px; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    label { font-weight: bold; }
+    input {
+      width: 100%; padding: 10px; font-size: 16px; margin-top: 4px;
+      border-radius: 6px; border: 1px solid #ccc;
+    }
+    .btn {
+      margin-top: 16px; padding: 12px 20px; border: none; border-radius: 8px;
+      font-size: 16px; cursor: pointer; width: 100%;
+    }
+    .btn-primary { background-color: #00796b; color: white; }
+    .btn-secondary { background-color: #10b981; color: #fff; }
+    .btn-link {
+      padding: 8px 14px; border-radius: 20px; border: 1px solid #cbd5e1;
+      background: #f8fafc; color:#0f766e; cursor:pointer; width:auto; margin-top:0;
+    }
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+    .lang-select {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; font-size: 0.9rem; color: #00796b;
+    }
+    canvas { margin-top: 28px; max-height: 400px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <button id="btn-back" class="btn-link">← Dashboard</button>
+      <select id="lang-select" class="lang-select" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="th">ไทย</option>
+      </select>
+    </div>
+
+    <h2 id="page-title">Retirement Planner</h2>
+
+    <div class="form-grid">
+      <div>
+        <label id="label-currentAge">Current Age</label>
+        <input type="text" id="currentAge" value="30" oninput="formatNumber(this)">
+      </div>
+      <div>
+        <label id="label-retireAge">Retirement Age</label>
+        <input type="text" id="retireAge" value="60" oninput="formatNumber(this)">
+      </div>
+      <div>
+        <label id="label-currentSavings">Current Savings (Baht)</label>
+        <input type="text" id="currentSavings" value="500,000" oninput="formatNumber(this)">
+      </div>
+      <div>
+        <label id="label-monthlyIncome">Monthly Income (Baht)</label>
+        <input type="text" id="monthlyIncome" value="30,000" oninput="formatNumber(this)">
+      </div>
+      <div>
+        <label id="label-monthlyExpense">Monthly Expenses (Baht)</label>
+        <input type="text" id="monthlyExpense" value="20,000" oninput="formatNumber(this)">
+      </div>
+      <div>
+        <label id="label-annualReturn">Annual Return (%)</label>
+        <input type="text" id="annualReturn" value="5" oninput="formatNumber(this)">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="calculate()" id="btn-calculate">Calculate</button>
+      <button class="btn btn-secondary" id="btn-save-ret">Save Calculation</button>
+    </div>
+
+    <canvas id="retirementChart"></canvas>
+  </div>
+
+  <!-- ===== MMMHistory (Guest-aware v2) ===== -->
+  <script>
+    (function(){
+      if (window.MMMHistory && window.MMMHistory.__v === '2') return;
+      const KEY = "mmm_history_v1";
+      const isUser = ()=> (localStorage.getItem('mmm_session') === 'user');
+
+      function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+      function getAll(){ try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ return []; } }
+      function setAll(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
+
+      function save(entry){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || localStorage.getItem('language') || 'en';
+          alert(lang==='th'
+            ? 'โหมดผู้เยี่ยมชม: โปรดเข้าสู่ระบบเพื่อบันทึกประวัติ'
+            : 'Guest mode: Please log in to save your history.');
+          return null;
+        }
+        const item = { id: uid(), createdAt: new Date().toISOString(), ...entry };
+        const list = getAll(); list.unshift(item); setAll(list); return item.id;
+      }
+      function remove(id){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || 'en';
+          alert(lang==='th' ? 'โหมดผู้เยี่ยมชม: ไม่สามารถลบรายการได้' : 'Guest mode: Delete is disabled.');
+          return;
+        }
+        setAll(getAll().filter(x => x.id !== id));
+      }
+      function clear(){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || 'en';
+          alert(lang==='th' ? 'โหมดผู้เยี่ยมชม: ไม่สามารถลบทั้งหมดได้' : 'Guest mode: Clear all is disabled.');
+          return;
+        }
+        localStorage.removeItem(KEY);
+      }
+      function get(id){ return getAll().find(x => x.id === id); }
+      window.MMMHistory = { __v:'2', save, getAll, get, remove, clear, isUser };
+    })();
+  </script>
+
+  <script>
+    let chart;
+    let lastInputs = null;
+    let lastResults = null;
+
+    // ===== i18n =====
+    const langData = {
+      en: {
+        "page-title": "Retirement Planner",
+        "label-currentAge": "Current Age",
+        "label-retireAge": "Retirement Age",
+        "label-currentSavings": "Current Savings (Baht)",
+        "label-monthlyIncome": "Monthly Income (Baht)",
+        "label-monthlyExpense": "Monthly Expenses (Baht)",
+        "label-annualReturn": "Annual Return (%)",
+        "btn-calculate": "Calculate",
+        "btn-save-ret": "Save Calculation",
+        "chartLabel": "Accumulated Savings (Baht)",
+        "chartTitle": "Savings Growth Until Retirement",
+        "xTitle": "Age (Years)",
+        "yTitle": "Savings (Baht)",
+        "savedMsg": "Saved!",
+        "btn-back": "← Dashboard"
+      },
+      th: {
+        "page-title": "เครื่องมือวางแผนเกษียณ",
+        "label-currentAge": "อายุปัจจุบัน",
+        "label-retireAge": "อายุเกษียณ",
+        "label-currentSavings": "เงินออมปัจจุบัน (บาท)",
+        "label-monthlyIncome": "รายได้ต่อเดือน (บาท)",
+        "label-monthlyExpense": "ค่าใช้จ่ายต่อเดือน (บาท)",
+        "label-annualReturn": "ผลตอบแทนต่อปี (%)",
+        "btn-calculate": "คำนวณ",
+        "btn-save-ret": "บันทึกการคำนวณ",
+        "chartLabel": "เงินออมสะสม (บาท)",
+        "chartTitle": "การเติบโตของเงินออมถึงอายุเกษียณ",
+        "xTitle": "อายุ (ปี)",
+        "yTitle": "เงินออมสะสม (บาท)",
+        "savedMsg": "บันทึกแล้ว!",
+        "btn-back": "← กลับหน้า Dashboard"
+      }
+    };
+
+    // ===== format & parse with comma =====
+    const fmt = (n)=> Number(n||0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+    function formatNumber(input){
+      const raw = (input.value || "").toString().replace(/,/g,'');
+      if (raw === "" || isNaN(raw)) return;
+      const parts = raw.split('.');
+      const intPart = parts[0];
+      const decPart = parts[1] !== undefined ? '.' + parts[1] : '';
+      input.value = Number(intPart).toLocaleString() + decPart;
+    }
+    const parseNum = (val)=> Number((val||"").toString().replace(/,/g,'')) || 0;
+
+    function changeLanguage() {
+      const lang = document.getElementById("lang-select").value;
+      // persist language for cross pages / guest alerts
+      localStorage.setItem('lang', lang);
+      localStorage.setItem('language', lang);
+
+      const t = langData[lang];
+      for (const key in t) {
+        const el = document.getElementById(key);
+        if (el) el.innerText = t[key];
+      }
+      calculate(); // refresh chart labels
+    }
+
+    function calculate() {
+      const currentAge     = parseNum(document.getElementById("currentAge").value);
+      const retireAge      = parseNum(document.getElementById("retireAge").value);
+      const currentSavings = parseNum(document.getElementById("currentSavings").value);
+      const monthlyIncome  = parseNum(document.getElementById("monthlyIncome").value);
+      const monthlyExpense = parseNum(document.getElementById("monthlyExpense").value);
+      const annualReturn   = parseNum(document.getElementById("annualReturn").value) / 100;
+
+      const lang = document.getElementById("lang-select").value;
+      const t = langData[lang];
+
+      const workingYears = Math.max(0, retireAge - currentAge);
+      let savings = currentSavings;
+      let labels = [];
+      let series = [];
+      let totalContribution = 0;
+      let totalInterest = 0;
+      const yearlyDeposit = (monthlyIncome - monthlyExpense) * 12;
+
+      for (let y = 1; y <= workingYears; y++) {
+        savings += yearlyDeposit;
+        totalContribution += Math.max(0, yearlyDeposit);
+        const interest = Math.max(0, savings * annualReturn);
+        savings += interest;
+        totalInterest += interest;
+        labels.push(currentAge + y);
+        series.push(Number(savings.toFixed(2)));
+      }
+
+      lastInputs = {
+        currentAge, retireAge, currentSavings,
+        monthlyIncome, monthlyExpense, annualReturnPct: (annualReturn*100)
+      };
+      lastResults = {
+        workingYears,
+        monthlySurplus: (monthlyIncome - monthlyExpense),
+        totalContribution: Number(totalContribution.toFixed(2)),
+        totalInterest: Number(totalInterest.toFixed(2)),
+        finalSavings: Number(savings.toFixed(2))
+      };
+
+      const ctx = document.getElementById('retirementChart').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: t.chartLabel,
+            data: series,
+            fill: true,
+            backgroundColor: 'rgba(76,175,80,0.2)',
+            borderColor: '#388e3c',
+            tension: 0.2
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: 'bottom' },
+            title: { display: true, text: t.chartTitle },
+            tooltip: {
+              callbacks: {
+                label: function(ctx){
+                  return `${t.chartLabel}: ${fmt(ctx.parsed.y)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: t.xTitle }},
+            y: {
+              title: { display: true, text: t.yTitle },
+              beginAtZero: true,
+              ticks: { callback: (v)=> fmt(v) }
+            }
+          }
+        }
+      });
+    }
+
+    window.onload = () => {
+      const savedLang = localStorage.getItem('lang') || localStorage.getItem('language') || 'en';
+      document.getElementById("lang-select").value = savedLang;
+      changeLanguage();
+    };
+
+    // -------- Back to Dashboard (prefer history, fallback to dashboard.php) --------
+    (function(){
+      const DASHBOARD = 'dashboard.php';
+      document.getElementById('btn-back').addEventListener('click', ()=>{
+        if (document.referrer) {
+          history.back();
+          setTimeout(()=>{
+            if (!document.referrer || document.referrer === location.href) location.href = DASHBOARD;
+          }, 200);
+        } else {
+          location.href = DASHBOARD;
+        }
+      });
+    })();
+
+    // -------- Save to History (blocked in Guest) --------
+    document.getElementById("btn-save-ret").addEventListener("click", ()=>{
+      if (!lastInputs || !lastResults) calculate(); // ensure latest
+      const lang = document.getElementById("lang-select").value;
+      const title = (lang === "th")
+        ? `วางแผนเกษียณ @ อายุ ${lastInputs.retireAge.toLocaleString()}`
+        : `Retirement @ ${lastInputs.retireAge.toLocaleString()}`;
+
+      const id = MMMHistory.save({
+        type: "retirement",
+        title,
+        inputs: lastInputs,
+        results: lastResults,
+        meta: { page: "retirement.php", version: "1.0" }
+      });
+      if (id) alert(langData[lang].savedMsg);
+      // ถ้า Guest MMMHistory จะ alert ให้เอง และคืน null
+    });
+  </script>
+</body>
+</html>
