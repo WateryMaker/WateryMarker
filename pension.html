@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gratuity & Pension</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #f4fbfb;
+      margin: 0;
+    }
+    .navbar {
+      background: white;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .navbar h1 {
+      color: #10b981;
+      margin: 0;
+    }
+    .navbar-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .navbar button {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .navbar select {
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    .container {
+      max-width: 960px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      text-align: center;
+      color: #0f766e;
+    }
+    h3 {
+      margin-top: 24px;
+      color: #222;
+    }
+    p, li {
+      font-size: 16px;
+      color: #333;
+      line-height: 1.6;
+    }
+    .img-wrap { display: flex; justify-content: center; }
+    img.graphic {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 12px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      margin: 20px 0;
+      display: block;
+    }
+    .chart-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    canvas {
+      max-width: 400px !important;
+      max-height: 250px !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <h1 id="site-title">MindMyMoney</h1>
+    <div class="navbar-right">
+      <label for="lang" id="lang-label" style="color:#334155;font-size:0.95rem;"></label>
+      <select id="lang" onchange="changeLang()">
+        <option value="en" selected>EN</option>
+        <option value="th">TH</option>
+      </select>
+      <button id="home-btn" onclick="window.location.href='index.html'">Back to Home</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="container">
+    <h2 id="page-title">Knowledge about Gratuity & Pension</h2>
+
+    <h3 id="gratuity-title">What is a gratuity?</h3>
+    <p id="gratuity-desc">
+      A gratuity is a one‑time lump‑sum payment granted in recognition of years of public service.
+    </p>
+
+    <h3 id="pension-title">What is a pension?</h3>
+    <p id="pension-desc">
+      A pension is a monthly payment for life, also granted for public service.
+    </p>
+
+    <h3 id="benefits-title">How do the benefits differ?</h3>
+    <ul>
+      <li id="benefit-gratuity"><strong>Gratuity:</strong> Lump sum once; generally no medical benefits.</li>
+      <li id="benefit-pension"><strong>Pension:</strong> Monthly for life; medical coverage for recipient and eligible family members.</li>
+    </ul>
+
+    <div class="img-wrap">
+      <img class="graphic" src="graphic-2.png" alt="Benefits comparison graphic" />
+    </div>
+
+    <h3 id="which-title">Which should I choose?</h3>
+    <p id="which-desc">
+      It depends on your personal financial plan. If you need a lump sum to clear debt or invest, a gratuity may fit.
+      If you prefer long‑term stable income, a pension is usually better.
+    </p>
+
+    <h3 id="compare-title" style="text-align:center;">Comparison of total received by age 80</h3>
+    <div class="chart- wrapper">
+      <canvas id="compareChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const i18n = {
+      en: {
+        siteTitle: "MindMyMoney",
+        homeBtn: "Back to Home",
+        langLabel: "Language:",
+        pageTitle: "Knowledge about Gratuity & Pension",
+        gratuityTitle: "What is a gratuity?",
+        gratuityDesc: "A gratuity is a one‑time lump‑sum payment granted in recognition of years of public service.",
+        pensionTitle: "What is a pension?",
+        pensionDesc: "A pension is a monthly payment for life, also granted for public service.",
+        benefitsTitle: "How do the benefits differ?",
+        benefitGratuity: "<strong>Gratuity:</strong> Lump sum once; generally no medical benefits.",
+        benefitPension: "<strong>Pension:</strong> Monthly for life; medical coverage for recipient and eligible family members.",
+        whichTitle: "Which should I choose?",
+        whichDesc: "It depends on your personal financial plan. If you need a lump sum to clear debt or invest, a gratuity may fit. If you prefer long‑term stable income, a pension is usually better.",
+        compareTitle: "Comparison of total received by age 80",
+        chartDatasetLabel: "Approximate amount (THB)",
+        chartBarLabels: ["Gratuity", "Pension"],
+        locale: "en-US"
+      },
+      th: {
+        siteTitle: "MindMyMoney",
+        homeBtn: "กลับหน้าหลัก",
+        langLabel: "ภาษา:",
+        pageTitle: "ความรู้เรื่องบำเหน็จ และบำนาญ",
+        gratuityTitle: "บำเหน็จคืออะไร?",
+        gratuityDesc: "บำเหน็จ คือเงินตอบแทนความชอบที่ได้รับราชการ จ่ายเพียงครั้งเดียวเป็นเงินก้อน",
+        pensionTitle: "บำนาญคืออะไร?",
+        pensionDesc: "บำนาญ คือเงินตอบแทนความชอบที่ได้รับราชการ แต่จ่ายเป็นรายเดือนตลอดชีวิต",
+        benefitsTitle: "สิทธิประโยชน์แตกต่างกันอย่างไร?",
+        benefitGratuity: "<strong>บำเหน็จ:</strong> ได้เงินก้อนครั้งเดียว โดยทั่วไปไม่มีสิทธิ์เบิกค่ารักษาพยาบาล",
+        benefitPension: "<strong>บำนาญ:</strong> ได้เงินรายเดือนตลอดชีวิต เบิกค่ารักษาพยาบาลได้ทั้งผู้รับและครอบครัวที่มีสิทธิ์",
+        whichTitle: "ควรเลือกแบบไหนดี?",
+        whichDesc: "ขึ้นอยู่กับแผนการเงินส่วนบุคคล หากต้องการเงินก้อนเพื่อปลดหนี้หรือลงทุน อาจเลือกบำเหน็จ แต่ถ้าต้องการรายได้มั่นคงระยะยาวควรเลือกบำนาญ",
+        compareTitle: "เปรียบเทียบเงินที่ได้รับเมื่ออายุ 80 ปี",
+        chartDatasetLabel: "เงินที่ได้รับโดยประมาณ (บาท)",
+        chartBarLabels: ["บำเหน็จ", "บำนาญ"],
+        locale: "th-TH"
+      }
+    };
+
+    let currentLang = "en";
+    let chartInstance = null;
+
+    function setTexts(t) {
+      document.getElementById("site-title").innerText = t.siteTitle;
+      document.getElementById("home-btn").innerText = t.homeBtn;
+      document.getElementById("lang-label").innerText = t.langLabel;
+      document.getElementById("page-title").innerText = t.pageTitle;
+      document.getElementById("gratuity-title").innerText = t.gratuityTitle;
+      document.getElementById("gratuity-desc").innerText = t.gratuityDesc;
+      document.getElementById("pension-title").innerText = t.pensionTitle;
+      document.getElementById("pension-desc").innerText = t.pensionDesc;
+      document.getElementById("benefits-title").innerText = t.benefitsTitle;
+      document.getElementById("benefit-gratuity").innerHTML = t.benefitGratuity;
+      document.getElementById("benefit-pension").innerHTML = t.benefitPension;
+      document.getElementById("which-title").innerText = t.whichTitle;
+      document.getElementById("which-desc").innerText = t.whichDesc;
+      document.getElementById("compare-title").innerText = t.compareTitle;
+      document.documentElement.lang = currentLang;
+      document.title = (currentLang === "en") ? "Gratuity & Pension" : "บำเหน็จและบำนาญ";
+    }
+
+    function renderChart(t) {
+      const ctx = document.getElementById("compareChart").getContext("2d");
+      if (chartInstance) chartInstance.destroy();
+
+      const gratuityAmount = 1_200_000;
+      const pensionPerMonth = 20_000;
+      const yearsTo80 = 20;
+      const pensionTotal = pensionPerMonth * 12 * yearsTo80;
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: t.chartBarLabels,
+          datasets: [{
+            label: t.chartDatasetLabel,
+            data: [gratuityAmount, pensionTotal],
+            backgroundColor: ['#f59e0b', '#10b981']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.raw || 0;
+                  return `${v.toLocaleString(t.locale)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: (value) => value.toLocaleString(t.locale)
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function changeLang() {
+      currentLang = document.getElementById("lang").value || "en";
+      const t = i18n[currentLang];
+      setTexts(t);
+      renderChart(t);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("lang").value = "en";
+      changeLang();
+    });
+  </script>
+
+</body>
+</html>

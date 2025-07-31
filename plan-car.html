@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Car Payment Plan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Prompt', sans-serif; background: linear-gradient(to bottom right, #d2f1f9, #e6fcef); margin: 0; padding: 0; }
+    .top-bar { display: flex; justify-content: flex-end; align-items: center; padding: 16px 24px; gap: 12px; }
+    .back-btn { background-color: #f3f4f6; border: none; padding: 6px 12px; font-size: 14px; color: #374151; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    select { padding: 6px 10px; border-radius: 8px; font-size: 14px; }
+    .container { max-width: 700px; margin: 0 auto 40px; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    h2 { text-align: center; color: #0f9d58; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: bold; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; }
+    .btn { background-color: #10b981; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; display: block; width: 100%; margin-top: 10px; }
+    .btn.save { background-color: #0ea5e9; }
+    .result { margin-top: 20px; text-align: center; font-weight: bold; color: #0f5132; }
+    .chart-container { max-width: 400px; margin: 30px auto; }
+    canvas { max-height: 220px !important; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <button id="btn-back" class="back-btn">
+      <span id="back-label">Back</span>
+    </button>
+    <select id="lang" onchange="changeLang()">
+      <option value="en" selected>EN</option>
+      <option value="th">TH</option>
+    </select>
+  </div>
+
+  <div class="container">
+    <h2 id="title">Car Payment Plan</h2>
+    <form id="car-plan-form">
+      <div class="form-group">
+        <label for="income" id="income-label">Monthly Income (THB)</label>
+        <input type="text" id="income" value="0" required oninput="formatNumber(this)">
+      </div>
+      <div class="form-group">
+        <label for="expenses" id="expense-label">Monthly Expenses (THB)</label>
+        <input type="text" id="expenses" value="0" required oninput="formatNumber(this)">
+      </div>
+      <div class="form-group">
+        <label for="savings" id="savings-label">Savings (THB)</label>
+        <input type="text" id="savings" value="0" required oninput="formatNumber(this)">
+      </div>
+      <div class="form-group">
+        <label for="carPrice" id="price-label">Car Price (THB)</label>
+        <input type="text" id="carPrice" value="0" required oninput="formatNumber(this)">
+      </div>
+
+      <!-- Interest type -->
+      <div class="form-group">
+        <label for="interestType" id="interest-type-label">Interest Type</label>
+        <select id="interestType" onchange="toggleInterestInputs()">
+          <option value="yearly" selected>Per Year (%)</option>
+          <option value="monthly">Per Month (%)</option>
+        </select>
+      </div>
+
+      <!-- Yearly interest input -->
+      <div class="form-group" id="yearlyBox">
+        <label for="interestYearly" id="interest-label-yearly">Interest Rate per Year (%)</label>
+        <input type="number" id="interestYearly" step="0.01" value="0">
+      </div>
+
+      <!-- Monthly interest input -->
+      <div class="form-group hidden" id="monthlyBox">
+        <label for="interestMonthly" id="interest-label-monthly">Interest Rate per Month (%)</label>
+        <input type="number" id="interestMonthly" step="0.01" value="0">
+      </div>
+
+      <div class="form-group">
+        <label for="years" id="term-label">Loan Term (Years)</label>
+        <input type="number" id="years" value="0" required>
+      </div>
+
+      <button type="submit" class="btn" id="calc-btn">Calculate</button>
+      <button type="button" class="btn save" id="save-btn">Save Calculation</button>
+    </form>
+
+    <div class="result" id="result"></div>
+    <div class="chart-container">
+      <canvas id="carChart"></canvas>
+    </div>
+  </div>
+
+  <!-- ===== MMMHistory (Guest-aware v2) ===== -->
+  <script>
+    (function(){
+      if (window.MMMHistory && window.MMMHistory.__v === '2') return;
+      const KEY = "mmm_history_v1";
+      const isUser = ()=> (localStorage.getItem('mmm_session') === 'user');
+
+      function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+      function getAll(){ try { return JSON.parse(localStorage.getItem(KEY))||[] } catch(e){ return [] } }
+      function setAll(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
+
+      function save(entry){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || localStorage.getItem('language') || 'en';
+          alert(lang==='th'
+            ? 'โหมดผู้เยี่ยมชม: โปรดเข้าสู่ระบบเพื่อบันทึกประวัติ'
+            : 'Guest mode: Please log in to save your history.');
+          return null;
+        }
+        const item = { id:uid(), createdAt:new Date().toISOString(), ...entry };
+        const list = getAll(); list.unshift(item); setAll(list); return item.id;
+      }
+      function remove(id){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || 'en';
+          alert(lang==='th' ? 'โหมดผู้เยี่ยมชม: ไม่สามารถลบรายการได้' : 'Guest mode: Delete is disabled.');
+          return;
+        }
+        setAll(getAll().filter(x=>x.id!==id));
+      }
+      function clear(){
+        if (!isUser()){
+          const lang = localStorage.getItem('lang') || 'en';
+          alert(lang==='th' ? 'โหมดผู้เยี่ยมชม: ไม่สามารถลบทั้งหมดได้' : 'Guest mode: Clear all is disabled.');
+          return;
+        }
+        localStorage.removeItem(KEY);
+      }
+      function get(id){ return getAll().find(x=>x.id===id); }
+
+      window.MMMHistory = { __v:'2', save, getAll, get, remove, clear, isUser };
+    })();
+  </script>
+
+  <script>
+    const langData = {
+      en: {
+        title: "Car Payment Plan",
+        incomeLabel: "Monthly Income (THB)",
+        expenseLabel: "Monthly Expenses (THB)",
+        savingsLabel: "Savings (THB)",
+        priceLabel: "Car Price (THB)",
+        interestType: "Interest Type",
+        interestYearly: "Per Year (%)",
+        interestMonthly: "Per Month (%)",
+        interestLabelYearly: "Interest Rate per Year (%)",
+        interestLabelMonthly: "Interest Rate per Month (%)",
+        termLabel: "Loan Term (Years)",
+        calcBtn: "Calculate",
+        saveBtn: "Save Calculation",
+        savedMsg: "Saved!",
+        backLabel: "Back",
+        resultCan: "✅ You can afford this car payment.",
+        resultCannot: "❌ Not recommended to finance this car.",
+        chartTitle: "Loan Breakdown",
+        labels: { principal: "Principal", interest: "Interest" },
+        currency: "THB"
+      },
+      th: {
+        title: "แผนการผ่อนรถ",
+        incomeLabel: "รายได้ต่อเดือน (บาท)",
+        expenseLabel: "รายจ่ายต่อเดือน (บาท)",
+        savingsLabel: "เงินเก็บ (บาท)",
+        priceLabel: "ราคารถ (บาท)",
+        interestType: "ประเภทดอกเบี้ย",
+        interestYearly: "ต่อปี (%)",
+        interestMonthly: "ต่อเดือน (%)",
+        interestLabelYearly: "อัตราดอกเบี้ยต่อปี (%)",
+        interestLabelMonthly: "อัตราดอกเบี้ยต่อเดือน (%)",
+        termLabel: "จำนวนปีที่ผ่อน",
+        calcBtn: "คำนวณ",
+        saveBtn: "บันทึกการคำนวณ",
+        savedMsg: "บันทึกแล้ว!",
+        backLabel: "ย้อนกลับ",
+        resultCan: "✅ สามารถผ่อนรถคันนี้ได้",
+        resultCannot: "❌ ไม่แนะนำให้ผ่อนรถคันนี้",
+        chartTitle: "สัดส่วนเงินกู้",
+        labels: { principal: "เงินต้น", interest: "ดอกเบี้ย" },
+        currency: "บาท"
+      }
+    };
+
+    let textContent = langData["en"];
+    let chart;
+    let lastInputs = null;
+    let lastResults = null;
+
+    function changeLang() {
+      const lang = document.getElementById("lang").value;
+      // persist language for other pages / guest alerts
+      localStorage.setItem('lang', lang);
+      localStorage.setItem('language', lang);
+
+      const t = langData[lang];
+      textContent = t;
+      document.getElementById("title").innerText = t.title;
+      document.getElementById("income-label").innerText = t.incomeLabel;
+      document.getElementById("expense-label").innerText = t.expenseLabel;
+      document.getElementById("savings-label").innerText = t.savingsLabel;
+      document.getElementById("price-label").innerText = t.priceLabel;
+      document.getElementById("interest-type-label").innerText = t.interestType;
+      document.querySelector("#interestType option[value='yearly']").innerText = t.interestYearly;
+      document.querySelector("#interestType option[value='monthly']").innerText = t.interestMonthly;
+      document.getElementById("interest-label-yearly").innerText = t.interestLabelYearly;
+      document.getElementById("interest-label-monthly").innerText = t.interestLabelMonthly;
+      document.getElementById("term-label").innerText = t.termLabel;
+      document.getElementById("calc-btn").innerText = t.calcBtn;
+      document.getElementById("save-btn").innerText = t.saveBtn;
+      document.getElementById("back-label").innerText = t.backLabel;
+    }
+
+    function toggleInterestInputs() {
+      const type = document.getElementById("interestType").value;
+      const yearlyBox = document.getElementById("yearlyBox");
+      const monthlyBox = document.getElementById("monthlyBox");
+      if (type === 'yearly') { yearlyBox.classList.remove('hidden'); monthlyBox.classList.add('hidden'); }
+      else { monthlyBox.classList.remove('hidden'); yearlyBox.classList.add('hidden'); }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedLang = localStorage.getItem('lang') || localStorage.getItem('language') || 'en';
+      document.getElementById('lang').value = savedLang;
+      changeLang();
+      toggleInterestInputs();
+    });
+
+    const form = document.getElementById("car-plan-form");
+    const resultDiv = document.getElementById("result");
+    const ctx = document.getElementById("carChart").getContext("2d");
+
+    function formatNumber(input) {
+      const value = (input.value || "").toString().replace(/,/g, '');
+      if (value === "" || isNaN(value)) return;
+      // รองรับทศนิยม: คงจุดทศนิยมถ้ามี
+      const parts = value.split('.');
+      const intPart = parts[0];
+      const decPart = parts[1] !== undefined ? '.' + parts[1] : '';
+      input.value = Number(intPart).toLocaleString() + decPart;
+    }
+
+    // ฟังก์ชันคำนวณ (ใช้ทั้งกด Calculate และ Save)
+    function runCalculation(render = true) {
+      const income   = Number((document.getElementById("income").value||'0').replace(/,/g, ''));
+      const expenses = Number((document.getElementById("expenses").value||'0').replace(/,/g, ''));
+      const savings  = Number((document.getElementById("savings").value||'0').replace(/,/g, ''));
+      const carPrice = Number((document.getElementById("carPrice").value||'0').replace(/,/g, ''));
+      const years    = Number(document.getElementById("years").value||'0');
+      const type     = document.getElementById("interestType").value;
+      const rateYearly  = Number(document.getElementById("interestYearly").value || 0);
+      const rateMonthly = Number(document.getElementById("interestMonthly").value || 0);
+
+      const totalMonths = Math.max(1, years * 12);
+      const monthlyRate = (type === 'yearly') ? (rateYearly/100/12) : (rateMonthly/100);
+
+      let monthlyPayment;
+      if (monthlyRate === 0) monthlyPayment = carPrice / totalMonths;
+      else monthlyPayment = (carPrice * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalMonths));
+
+      const totalPayment = monthlyPayment * totalMonths;
+      const interestAmount = totalPayment - carPrice;
+      const totalMonthlyOutflow = monthlyPayment + expenses;
+      const canAfford = (monthlyPayment <= (income - expenses) * 0.2) || (savings >= monthlyPayment * 3);
+
+      const inputs = {
+        income, expenses, savings, carPrice, years,
+        rateType: type, interestYearly: rateYearly, interestMonthly: rateMonthly
+      };
+      const results = {
+        totalMonths,
+        monthlyRate,
+        monthlyPayment: Math.round(monthlyPayment),
+        totalPaid: Math.round(totalPayment),
+        totalInterest: Math.round(interestAmount),
+        totalOutflowMonthly: Math.round(totalMonthlyOutflow),
+        canAfford
+      };
+
+      if (render) {
+        const currencyUnit = textContent.currency;
+        resultDiv.innerHTML =
+          `🧾 Monthly Payment: ${results.monthlyPayment.toLocaleString()} ${currencyUnit}<br>
+           💰 Savings: ${savings.toLocaleString()} ${currencyUnit}<br>
+           📦 Total Outflow (w/ Expenses): ${results.totalOutflowMonthly.toLocaleString()} ${currencyUnit}<br>
+           💰 Total Payable: ${results.totalPaid.toLocaleString()} ${currencyUnit}<br>
+           📈 Interest Paid: ${results.totalInterest.toLocaleString()} ${currencyUnit}<br><br>` +
+          `<span style="color:${canAfford ? 'green' : 'red'}; font-size:18px;">${textContent[canAfford ? 'resultCan' : 'resultCannot']}</span>`;
+
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: [textContent.labels.principal, textContent.labels.interest],
+            datasets: [{ data: [carPrice, results.totalInterest], backgroundColor: ['#10b981', '#ef4444'] }]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'bottom' }, title: { display: true, text: textContent.chartTitle } } }
+        });
+      }
+
+      // เก็บไว้ให้ปุ่ม Save ใช้
+      lastInputs = inputs;
+      lastResults = results;
+      return { inputs, results };
+    }
+
+    // กด Calculate
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      runCalculation(true);
+    });
+
+    // กด Save → บันทึกลง History (Guest จะถูกบล็อกโดย MMMHistory)
+    document.getElementById("save-btn").addEventListener("click", function(){
+      if (!lastResults) runCalculation(true); // ensure have latest
+      const lang = document.getElementById("lang").value;
+      const rateText = (lastInputs.rateType === 'yearly')
+        ? `${lastInputs.interestYearly}%/yr`
+        : `${lastInputs.interestMonthly}%/mo`;
+      const title = (lang === "th")
+        ? `ผ่อนรถ • ${lastInputs.years.toLocaleString()} ปี @ ${rateText}`
+        : `Car • ${lastInputs.years.toLocaleString()}y @ ${rateText}`;
+
+      const id = MMMHistory.save({
+        type: "car",
+        title,
+        inputs: lastInputs,
+        results: lastResults,
+        meta: { page: "plan-car.html", version: "1.0" }
+      });
+      if (id) alert(langData[lang].savedMsg);
+    });
+
+    // ปุ่ม Back → ถ้าย้อนกลับไม่ได้ให้ไป dashboard.php
+    (function(){
+      const DASHBOARD = 'dashboard.php'; // ปรับตามชื่อไฟล์จริงในโปรเจกต์คุณ
+      document.getElementById('btn-back').addEventListener('click', ()=>{
+        if (document.referrer) {
+          history.back();
+          setTimeout(()=>{ if (!document.referrer || document.referrer === location.href) location.href = DASHBOARD; }, 200);
+        } else {
+          location.href = DASHBOARD;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
