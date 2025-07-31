@@ -11,25 +11,102 @@
 <link href="login.css" rel="stylesheet">
 
 <style>
-
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.wrapper {
-  animation: fadeInUp 0.8s ease-out both;
-}
+.wrapper { animation: fadeInUp 0.8s ease-out both; }
+
 .language-switch {
   position: absolute;
   top: 20px;
   left: 30px;
   z-index: 99;
+}
+
+/* ===== Mobile-friendly overrides (เพิ่มส่วนนี้) ===== */
+@media (max-width: 768px) {
+  /* จัดหน้าให้เริ่มจากบน และเว้นพื้นที่ปุ่มบน */
+  body{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: max(64px, env(safe-area-inset-top));
+    background: #f7fafb;
+  }
+
+  /* ปุ่มภาษา + ปุ่มกลับ ให้อยู่มุมบนแบบ fixed */
+  .language-switch{ position: fixed; top: 12px; left: 12px; z-index: 99; }
+  .back-home-button{ position: fixed !important; top: 12px !important; right: 12px !important; z-index: 99; }
+
+  /* กล่องหลักให้กว้างเต็มจอ สูงอัตโนมัติ ไม่ลอย */
+  .wrapper{
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    margin: 0 auto 24px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 6px 24px rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+
+  /* ตัดพื้นหลังลายเอียงออกบนมือถือ */
+  .wrapper .rotate-bg,
+  .wrapper .rotate-bg2{
+    display: none;
+  }
+
+  /* ฟอร์มให้เรียงเป็นคอลัมน์เดียว กินเต็มพื้นที่ */
+  .wrapper .form-box{
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 24px 18px;
+    display: none; /* ซ่อนก่อน แล้วค่อยโชว์เฉพาะอันที่ใช้งาน */
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* แสดงเฉพาะกล่องที่ใช้งาน (login หรือ register) */
+  .wrapper:not(.active) .form-box.login{ display: flex; }
+  .wrapper.active .form-box.register{ display: flex; }
+
+  /* ซ่อนกล่องข้อความด้านขวาในมือถือ เพื่อไม่ให้แน่น */
+  .wrapper .info-text{ display: none; }
+
+  /* ลด/ปิดเอฟเฟกต์เลื่อนบนมือถือให้ภาพนิ่งไม่ลอย */
+  .wrapper .form-box .animation{
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+
+  /* ช่องกรอก/ปุ่มให้แตะง่ายและไม่เกิดการซูมใน iOS */
+  .input-box input{
+    font-size: 16px;   /* ≥16px ป้องกัน iOS auto-zoom */
+    padding-right: 28px;
+  }
+  form button{
+    width: 100%;
+    height: 48px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  /* ระยะห่างข้อความลิงก์ */
+  form .linkTxt{
+    margin: 16px 0 0;
+    text-align: center;
+  }
+}
+
+/* จอเล็กมาก */
+@media (max-width: 360px){
+  .wrapper{ max-width: 94vw; }
+  .language-switch select{ transform: scale(.95); }
 }
 </style>
 </head>
@@ -40,7 +117,6 @@
   <select id="langSelect" onchange="switchLang()" style="padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; color: #10b981;">
     <option value="th">ไทย</option>
     <option value="en">English</option>
-
   </select>
 </div>
 
@@ -51,23 +127,22 @@
   </span>
 </a>
 
-
 <!-- Wrapper -->
 <div class="wrapper">
   <span class="rotate-bg"></span>
   <span class="rotate-bg2"></span>
 
   <!-- Login Box -->
-<div class="form-box login active">
+  <div class="form-box login active">
     <h2 class="title animation" style="--i:0; --j:21" id="login-title">Login</h2>
     <form action="login.php" method="POST">
       <div class="input-box animation" style="--i:1; --j:22">
-        <input name="email" required="" type="email"/>
+        <input name="email" required type="email"/>
         <label id="label-email">Email</label>
         <i class="bx bxs-user"></i>
       </div>
       <div class="input-box animation" style="--i:2; --j:23">
-        <input name="password" required="" type="password"/>
+        <input name="password" required type="password"/>
         <label id="label-password">Password</label>
         <i class="bx bxs-lock-alt"></i>
         <div id="login-error" style="color: red; font-size: 0.9rem; margin-top: 4px; display: none;"></div>
@@ -92,17 +167,17 @@
     <h2 class="title animation" style="--i:17; --j:0" id="signup-title">Sign Up</h2>
     <form action="register.php" method="POST">
       <div class="input-box animation" style="--i:18; --j:1">
-        <input name="username" required="" type="text"/>
+        <input name="username" required type="text"/>
         <label id="label-username">Username</label>
         <i class="bx bxs-user"></i>
       </div>
       <div class="input-box animation" style="--i:19; --j:2">
-        <input name="email" required="" type="email"/>
+        <input name="email" required type="email"/>
         <label>Email</label>
         <i class="bx bxs-envelope"></i>
       </div>
       <div class="input-box animation" style="--i:20; --j:3">
-        <input name="password" required="" type="password"/>
+        <input name="password" required type="password"/>
         <label>Password</label>
         <i class="bx bxs-lock-alt"></i>
       </div>
@@ -140,8 +215,6 @@ const texts = {
     signupWelcome: "Start your financial journey",
     signupSubtext: `Create an account and take control of your money with ease`,
     backButton: "Back to Home",
-
-    /* errors */
     err_required: "Please enter email and password.",
     err_email: "Please enter a valid email address.",
     err_password_len: "Password must be at least 6 characters.",
@@ -164,8 +237,6 @@ const texts = {
     signupWelcome: "เริ่มต้นเส้นทางการเงินของคุณ",
     signupSubtext: `สร้างบัญชีเพื่อควบคุมการเงินของคุณได้อย่างง่ายดาย`,
     backButton: "กลับหน้าแรก",
-
-    /* errors */
     err_required: "กรุณากรอกอีเมลและรหัสผ่าน",
     err_email: "กรุณากรอกอีเมลให้ถูกต้อง",
     err_password_len: "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร",
@@ -229,18 +300,14 @@ function hideLoginError() {
 }
 
 /* -------- Client validation -------- */
-function isValidEmail(email){
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+function isValidEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
 
 document.addEventListener("DOMContentLoaded", () => {
   const lang = localStorage.getItem("lang") || "en";
-  // ตั้งภาษาเริ่มต้น + ปุ่ม back
   document.getElementById("langSelect").value = lang;
   document.getElementById("btn-back").innerText = texts[lang].backButton;
   switchLang();
 
-  // ตรวจสอบฟอร์ม login ก่อนส่งไป server
   const loginForm = document.querySelector(".form-box.login form");
   if (loginForm) {
     loginForm.setAttribute("novalidate", "novalidate");
@@ -250,33 +317,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = (formData.get("email") || "").toString().trim();
       const password = (formData.get("password") || "").toString();
 
-      if (!email || !password) {
-        e.preventDefault();
-        showLoginError("err_required");
-        return;
-      }
-      if (!isValidEmail(email)) {
-        e.preventDefault();
-        showLoginError("err_email");
-        return;
-      }
-      if (password.length < 6) {
-        e.preventDefault();
-        showLoginError("err_password_len");
-        return;
-      }
-      // ผ่าน client validation → ให้ server ตรวจสอบ credential ต่อ
+      if (!email || !password) { e.preventDefault(); showLoginError("err_required"); return; }
+      if (!isValidEmail(email)) { e.preventDefault(); showLoginError("err_email"); return; }
+      if (password.length < 6) { e.preventDefault(); showLoginError("err_password_len"); return; }
     });
   }
 
-  // รองรับ error จาก server (เช่น login.php → redirect กลับมาพร้อม ?error=invalid)
   const params = new URLSearchParams(location.search);
-  const error = params.get("error"); // invalid | locked | unknown | (หรือข้อความ custom)
+  const error = params.get("error");
   if (error) {
     if (["invalid","locked","unknown"].includes(error)) {
       showLoginError(`err_${error}`);
     } else {
-      // ถ้า server ส่งข้อความ custom มา
       showLoginError(decodeURIComponent(error));
     }
   }
@@ -298,4 +350,5 @@ style.textContent = `
 document.head.appendChild(style);
 </script>
 
-
+</body>
+</html>
