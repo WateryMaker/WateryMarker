@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ความรู้สินเชื่อรถยนต์ | MindMyMoney</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --brand:#10b981;
+      --ink:#0f172a;
+      --muted:#475569;
+      --paper:#ffffff;
+      --bg:#f7fafb;
+      --accent:#3b82f6;
+    }
+    html,body{margin:0}
+    body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--ink);line-height:1.8}
+    /* Navbar */
+    .navbar{position:sticky;top:0;z-index:10;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06);
+      display:flex;align-items:center;gap:12px;padding:12px 16px}
+    .brand{margin:0;color:var(--brand);font-weight:700;font-size:1.05rem}
+    .nav-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+    .lang{padding:6px 10px;border:1px solid #cbd5e1;border-radius:9999px}
+    .btn{background:var(--accent);color:#fff;border:none;border-radius:9999px;padding:8px 14px;cursor:pointer}
+    /* Article */
+    .article{max-width:980px;margin:22px auto;background:var(--paper);border:1px solid #e2e8f0;border-radius:20px;
+      padding:28px 22px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+    .kicker{color:var(--brand);font-weight:600;letter-spacing:.02em}
+    h1{font-size:1.6rem;margin:.25rem 0 1rem}
+    h2{font-size:1.25rem;margin:2rem 0 .5rem;color:#0f766e}
+    h3{font-size:1.05rem;margin:1rem 0 .25rem}
+    p{margin:.5rem 0;color:var(--ink)}
+    .muted{color:var(--muted)}
+    .figure{margin:20px 0}
+    .figure img{width:100%;height:auto;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+    .figure .cap{font-size:.95rem;color:#64748b;margin-top:6px}
+    ul,ol{margin:.25rem 0 .5rem 1.2rem}
+    .tip{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:12px 14px;border-radius:12px}
+    footer{max-width:980px;margin:14px auto 26px;text-align:center;color:#64748b;font-size:.9rem}
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="brand" id="brand">ความรู้สินเชื่อรถยนต์</div>
+    <div class="nav-right">
+      <select id="lang" class="lang" onchange="applyLang()">
+        <option value="th">ไทย</option>
+        <option value="en">English</option>
+      </select>
+      <button class="btn" id="backBtn" onclick="location.href='index.html'">← กลับหน้าแรก</button>
+    </div>
+  </div>
+
+  <!-- Article -->
+  <article class="article">
+    <div class="kicker" id="kicker">MindMyMoney • Car Finance Guide</div>
+    <h1 id="title">คู่มือทำความเข้าใจสินเชื่อรถยนต์แบบครบถ้วน</h1>
+    <p id="intro" class="muted">
+      บทความนี้สรุปตั้งแต่ส่วนประกอบของสินเชื่อรถยนต์ การเตรียมตัวก่อนตัดสินใจ ไปจนถึงขั้นตอนและเอกสารที่ใช้จริง
+      อ่านรวดเดียวเข้าใจภาพรวมทั้งหมด และมีภาพประกอบให้ดูง่ายทั้งภาษาไทยและอังกฤษ
+    </p>
+
+    <!-- ภาพ 1: Components -->
+    <div class="figure">
+      <img id="img1" src="6.jpg" alt="ส่วนประกอบสำคัญของสินเชื่อรถยนต์">
+      <div class="cap" id="cap1">ส่วนประกอบสำคัญของสินเชื่อรถยนต์: วงเงินกู้ • ดอกเบี้ย • ระยะเวลา • ค่างวด • หลักประกัน</div>
+    </div>
+
+    <h2 id="h_overview">ภาพรวมสินเชื่อรถยนต์คืออะไร</h2>
+    <p id="p_overview_1">
+      สถาบันการเงินเป็นผู้ให้บริการสินเชื่อรถยนต์ เมื่อผู้ซื้อขอสินเชื่อและได้รับอนุมัติ ธนาคาร/ไฟแนนซ์จะชำระเงินให้ผู้ขายก่อน
+      ผู้ซื้อจึงทำสัญญาผ่อนชำระรายเดือน เมื่อผ่อนครบจึงโอนกรรมสิทธิ์เป็นของผู้ซื้อ
+      นอกจากเงินต้น ผู้ซื้อยังต้องชำระดอกเบี้ยซึ่งแตกต่างกันไปตามสถาบันการเงินและระยะเวลาการผ่อน
+    </p>
+
+    <h2 id="h_before">ก่อนตัดสินใจซื้อรถ: สิ่งที่ควรพิจารณา</h2>
+    <h3 id="h_bank">1) ศึกษาสถาบันการเงินที่ต้องการขอสินเชื่อ</h3>
+    <p id="p_bank">
+      เลือกสถาบันที่มีความน่าเชื่อถือ มีช่องทางชำระเงินหลากหลาย บริการหลังการขายดี และระบุข้อมูลเงื่อนไขชัดเจน
+      ตรวจสอบรีวิวอัตราดอกเบี้ยจริง ค่าธรรมเนียม และเงื่อนไขผิดนัดชำระก่อนตัดสินใจ
+    </p>
+
+    <h3 id="h_rate">2) พิจารณาราคา/ดอกเบี้ยให้เหมาะกับแผนของคุณ</h3>
+    <p id="p_rate_1">
+      ตลาดสินเชื่อรถมีการแข่งขันสูง อัตราดอกเบี้ยอาจต่ำราว 1.95% จนถึงราว 13% ขึ้นกับโปรโมชันและเครดิตผู้กู้
+      โดยทั่วไปหากเลือกระยะเวลาผ่อนยาว ค่างวดจะต่ำลงแต่ดอกเบี้ยรวมสูงขึ้น
+      ควรเลือกอัตราดอกเบี้ยต่ำและระยะเวลาที่เหมาะสมกับกำลังผ่อนจริง
+    </p>
+    <div class="tip" id="tip_20rule">
+      กฎง่าย ๆ ที่ช่วยคุมความเสี่ยง: วางเงินดาวน์ราว 20% • ค่างวดต่อเดือนควรไม่เกิน ~20% ของรายได้ต่อเดือน
+    </div>
+
+    <h3 id="h_calc">3) ใช้โปรแกรมคำนวณสินเชื่อรถยนต์</h3>
+    <p id="p_calc_1">
+      เครื่องคำนวณช่วยประเมินค่างวดต่อเดือนโดยประมาณ พร้อมเห็นสัดส่วนเงินต้น‑ดอกเบี้ย และยอดคงเหลือในช่วงอายุสัญญา
+      บนเว็บไซต์ MindMyMoney คุณสามารถไปที่เมนู “แผนการผ่อนรถ” เพื่อทดลองปรับตัวเลขได้ทันที
+    </p>
+
+    <h3 id="h_used">4) พิจารณาสินเชื่อรถมือสอง (อีกหนึ่งทางเลือก)</h3>
+    <p id="p_used_1">
+      ในไทย สินเชื่อรถใหม่พบมากที่สุด แต่สินเชื่อรถมือสองและสินเชื่อรูปแบบขายแล้วเช่าคืนก็เป็นทางเลือกที่น่าสนใจ
+      ตัวอย่างเช่น หากรถใหม่ราคา ~970,000 บาท รายได้ ~450,000 บาท/ปี ต้องวางดาวน์ราว 20% และผ่อน 5 ปี
+      ค่างวดควรไม่เกิน ~20% ของรายได้ต่อเดือน แต่ถ้าเลือกซื้อรถมือสองรุ่นเดียวกันหลังใช้งาน 3 ปี
+      ราคามักลดลงราว 30% เหลือ ~500,000 บาท ช่วยลดภาระค่างวดและเบี้ยประกันลงได้มาก
+    </p>
+
+    <!-- ภาพ 2: Prevent breach -->
+    <div class="figure">
+      <img id="img2" src="7.jpg" alt="วิธีป้องกันการผิดสัญญาเช่าซื้อ">
+      <div class="cap" id="cap2">วิธีป้องกันการผิดสัญญา: จ่ายตรงเวลา • ติดต่อไฟแนนซ์เมื่อมีปัญหา • ไม่ขาย/จำนำ/โอนสิทธิ์ • อ่านสัญญาให้ครบ</div>
+    </div>
+
+    <h2 id="h_require">คุณสมบัติผู้กู้ & เอกสารที่ใช้</h2>
+    <h3 id="h_qual">คุณสมบัติพื้นฐาน</h3>
+    <p id="p_qual">
+      อายุ 20–60 ปี มีรายได้สม่ำเสมอ และประวัติสินเชื่อเหมาะสม (อาจมีผู้ค้ำกรณีรายได้ไม่ถึงเกณฑ์)
+    </p>
+    <h3 id="h_docs">เอกสารประกอบการกู้</h3>
+    <ul id="ul_docs">
+      <li>สำเนาบัตรประชาชนหรือบัตรข้าราชการ 4 ชุด</li>
+      <li>สำเนาทะเบียนบ้าน 4 ชุด</li>
+      <li>สำเนาทะเบียนสมรส (ถ้ามี)</li>
+      <li>สมุดบัญชีเงินฝากย้อนหลัง 6 เดือน</li>
+      <li>หลักฐานรายได้/หนังสือรับรองเงินเดือน</li>
+      <li>กรณีนิติบุคคล: หนังสือรับรองบริษัท + ใบ ภ.พ.20</li>
+      <li>เจ้าของกิจการ: หนังสือรับรองบริษัทอายุไม่เกิน 3 เดือน</li>
+    </ul>
+
+    <h2 id="h_steps">ขั้นตอนการขอสินเชื่อรถยนต์</h2>
+    <ol id="ol_steps">
+      <li>เลือกธนาคาร/ไฟแนนซ์ที่เหมาะสม (พิจารณาอัตราดอกเบี้ยและเงื่อนไข)</li>
+      <li>เตรียมเอกสารและยื่นคำขอ</li>
+      <li>ฝ่ายประเมินตรวจสอบ (โดยมากไม่เกิน ~7 วันทำการ)</li>
+      <li>ได้รับผลอนุมัติและทำสัญญากู้</li>
+      <li>รับรถยนต์และสำเนาทะเบียน (เล่มจริงอยู่กับไฟแนนซ์จนผ่อนครบ)</li>
+    </ol>
+
+    <!-- ภาพ 3: Leasing vs Hire purchase -->
+    <div class="figure">
+      <img id="img3" src="8.jpg" alt="ลิสซิ่ง vs เช่าซื้อ">
+      <div class="cap" id="cap3">ลิสซิ่ง vs เช่าซื้อ: ความต่างด้านกรรมสิทธิ์ ระยะเวลา ค่าใช้จ่าย การดูแลรักษา และความยืดหยุ่น</div>
+    </div>
+
+    <h2 id="h_tips">ข้อควรรู้ & เคล็ดลับ</h2>
+    <ul id="ul_tips">
+      <li>เช็กค่าธรรมเนียมแฝง (ทำสัญญา, ปิดก่อนกำหนด, ค่าทวงถาม) ให้ครบก่อนเซ็น</li>
+      <li>ผ่อนให้ตรงเวลาเพื่อรักษาเครดิต และป้องกันค่าใช้จ่ายส่วนเพิ่ม</li>
+      <li>หากมีปัญหาการเงิน ให้รีบติดต่อไฟแนนซ์เพื่อปรับโครงสร้างหนี้/ขอพักชำระ</li>
+    </ul>
+  </article>
+
+  <footer id="foot">MindMyMoney • เอกสารให้ความรู้สำหรับผู้ขอสินเชื่อรถยนต์</footer>
+
+  <script>
+    // ชุดรูปภาพภาษา TH/EN
+    const IMG = {
+      th: { comp:"6.jpg", prevent:"7.jpg", compare:"8.jpg" },
+      en: { comp:"12.jpg", prevent:"14.jpg", compare:"16.jpg" }
+    };
+
+    // คำแปล (ข้อความยาวใช้ innerHTML)
+    const T = {
+      th: {
+        brand:"ความรู้สินเชื่อรถยนต์",
+        back:"← กลับหน้าแรก",
+        kicker:"MindMyMoney • คู่มือการเงิน",
+        title:"คู่มือทำความเข้าใจสินเชื่อรถยนต์แบบครบถ้วน",
+        intro:"บทความนี้สรุปตั้งแต่ส่วนประกอบของสินเชื่อรถยนต์ การเตรียมตัวก่อนตัดสินใจ ไปจนถึงขั้นตอนและเอกสารที่ใช้จริง อ่านรวดเดียวเข้าใจภาพรวมทั้งหมด และมีภาพประกอบให้ดูง่ายทั้งภาษาไทยและอังกฤษ",
+        cap1:"ส่วนประกอบสำคัญของสินเชื่อรถยนต์: วงเงินกู้ • ดอกเบี้ย • ระยะเวลา • ค่างวด • หลักประกัน",
+        h_overview:"ภาพรวมสินเชื่อรถยนต์คืออะไร",
+        p_overview_1:"สถาบันการเงินเป็นผู้ให้บริการสินเชื่อรถยนต์ เมื่อผู้ซื้อขอสินเชื่อและได้รับอนุมัติ ธนาคาร/ไฟแนนซ์จะชำระเงินให้ผู้ขายก่อน ผู้ซื้อจึงทำสัญญาผ่อนชำระรายเดือน เมื่อผ่อนครบจึงโอนกรรมสิทธิ์เป็นของผู้ซื้อ นอกจากเงินต้น ผู้ซื้อยังต้องชำระดอกเบี้ยซึ่งแตกต่างกันไปตามสถาบันการเงินและระยะเวลาการผ่อน",
+        h_before:"ก่อนตัดสินใจซื้อรถ: สิ่งที่ควรพิจารณา",
+        h_bank:"1) ศึกษาสถาบันการเงินที่ต้องการขอสินเชื่อ",
+        p_bank:"เลือกสถาบันที่มีความน่าเชื่อถือ มีช่องทางชำระเงินหลากหลาย บริการหลังการขายดี และระบุข้อมูลเงื่อนไขชัดเจน ตรวจสอบรีวิวอัตราดอกเบี้ยจริง ค่าธรรมเนียม และเงื่อนไขผิดนัดชำระก่อนตัดสินใจ",
+        h_rate:"2) พิจารณาราคา/ดอกเบี้ยให้เหมาะกับแผนของคุณ",
+        p_rate_1:"ตลาดสินเชื่อรถมีการแข่งขันสูง อัตราดอกเบี้ยอาจต่ำราว 1.95% จนถึงราว 13% ขึ้นกับโปรโมชันและเครดิตผู้กู้ โดยทั่วไปหากเลือกระยะเวลาผ่อนยาว ค่างวดจะต่ำลงแต่ดอกเบี้ยรวมสูงขึ้น ควรเลือกอัตราดอกเบี้ยต่ำและระยะเวลาที่เหมาะสมกับกำลังผ่อนจริง",
+        tip_20rule:"กฎง่าย ๆ ที่ช่วยคุมความเสี่ยง: วางเงินดาวน์ราว 20% • ค่างวดต่อเดือนควรไม่เกิน ~20% ของรายได้ต่อเดือน",
+        h_calc:"3) ใช้โปรแกรมคำนวณสินเชื่อรถยนต์",
+        p_calc_1:"เครื่องคำนวณช่วยประเมินค่างวดต่อเดือนโดยประมาณ พร้อมเห็นสัดส่วนเงินต้น‑ดอกเบี้ย และยอดคงเหลือในช่วงอายุสัญญา บนเว็บไซต์ MindMyMoney คุณสามารถไปที่เมนู “แผนการผ่อนรถ” เพื่อทดลองปรับตัวเลขได้ทันที",
+        h_used:"4) พิจารณาสินเชื่อรถมือสอง (อีกหนึ่งทางเลือก)",
+        p_used_1:"ในไทย สินเชื่อรถใหม่พบมากที่สุด แต่สินเชื่อรถมือสองและสินเชื่อรูปแบบขายแล้วเช่าคืนก็เป็นทางเลือกที่น่าสนใจ ตัวอย่างเช่น หากรถใหม่ราคา ~970,000 บาท รายได้ ~450,000 บาท/ปี ต้องวางดาวน์ราว 20% และผ่อน 5 ปี ค่างวดควรไม่เกิน ~20% ของรายได้ต่อเดือน แต่ถ้าเลือกซื้อรถมือสองรุ่นเดียวกันหลังใช้งาน 3 ปี ราคามักลดลงราว 30% เหลือ ~500,000 บาท ช่วยลดภาระค่างวดและเบี้ยประกันลงได้มาก",
+        cap2:"วิธีป้องกันการผิดสัญญา: จ่ายตรงเวลา • ติดต่อไฟแนนซ์เมื่อมีปัญหา • ไม่ขาย/จำนำ/โอนสิทธิ์ • อ่านสัญญาให้ครบ",
+        h_require:"คุณสมบัติผู้กู้ & เอกสารที่ใช้",
+        h_qual:"คุณสมบัติพื้นฐาน",
+        p_qual:"อายุ 20–60 ปี มีรายได้สม่ำเสมอ และประวัติสินเชื่อเหมาะสม (อาจมีผู้ค้ำกรณีรายได้ไม่ถึงเกณฑ์)",
+        h_docs:"เอกสารประกอบการกู้",
+        h_steps:"ขั้นตอนการขอสินเชื่อรถยนต์",
+        cap3:"ลิสซิ่ง vs เช่าซื้อ: ความต่างด้านกรรมสิทธิ์ ระยะเวลา ค่าใช้จ่าย การดูแลรักษา และความยืดหยุ่น",
+        h_tips:"ข้อควรรู้ & เคล็ดลับ",
+        foot:"MindMyMoney • เอกสารให้ความรู้สำหรับผู้ขอสินเชื่อรถยนต์",
+      },
+      en: {
+        brand:"Car Loan Knowledge",
+        back:"← Back to Home",
+        kicker:"MindMyMoney • Finance Guide",
+        title:"A Complete Guide to Understanding Car Loans",
+        intro:"This article covers the core components of car loans, what to consider before buying, the application steps and the required documents. Read through once to grasp the big picture. Infographics are provided in both Thai and English.",
+        cap1:"Key components of car loans: loan amount • interest rate • term • installment • collateral",
+        h_overview:"What a Car Loan Really Is",
+        p_overview_1:"A finance company/bank pays the seller first once your loan is approved. You then repay the loan monthly. Ownership is transferred to you after full repayment. Besides the principal, you must pay interest, which varies by lender and loan term.",
+        h_before:"Before Deciding to Buy: Things to Consider",
+        h_bank:"1) Research lenders you plan to apply with",
+        p_bank:"Choose reputable lenders with multiple payment channels, clear conditions and good after‑sales service. Check real rates, fees and default clauses before signing.",
+        h_rate:"2) Balance price/rate with your repayment plan",
+        p_rate_1:"In Thailand the market is competitive. Rates can be as low as ~1.95% up to ~13%, depending on promotion and credit profile. Longer terms reduce monthly installments but increase total interest. Pick a low rate and a term that fits your true capacity.",
+        tip_20rule:"Simple rule of thumb: ~20% down payment • monthly installment ≤ ~20% of monthly income.",
+        h_calc:"3) Use a car‑loan calculator",
+        p_calc_1:"Calculators estimate monthly installments and show the principal‑interest split and remaining balance over time. On MindMyMoney you can try the “Car Payment Plan” tool.",
+        h_used:"4) Consider secondhand car loans",
+        p_used_1:"New‑car loans are most common, but used‑car loans or sale‑and‑leaseback can be attractive. Example: a new car at ~970,000 THB with ~450,000 THB annual income implies ~20% down and 5‑year term. The same model after ~3 years could be ~30% cheaper (~500,000 THB), cutting installments and insurance costs significantly.",
+        cap2:"Prevent breaches: pay on time • contact lender when in trouble • don’t sell/pawn/transfer • read the contract thoroughly.",
+        h_require:"Borrower Qualifications & Documents",
+        h_qual:"Basic qualifications",
+        p_qual:"Age 20–60, stable income and acceptable credit history (a guarantor may be required).",
+        h_docs:"Required documents",
+        h_steps:"Steps to Apply for a Car Loan",
+        cap3:"Leasing vs Hire Purchase: differences in ownership, term, costs, maintenance and flexibility.",
+        h_tips:"Notes & Tips",
+        foot:"MindMyMoney • Educational material for car‑loan applicants",
+      }
+    };
+
+    // อัปเดตข้อความรายการ (ใช้ innerHTML เพื่อเก็บ <li> เดิมใน TH ได้)
+    function setListTH() {
+      document.getElementById('ul_docs').innerHTML = `
+        <li>สำเนาบัตรประชาชนหรือบัตรข้าราชการ 4 ชุด</li>
+        <li>สำเนาทะเบียนบ้าน 4 ชุด</li>
+        <li>สำเนาทะเบียนสมรส (ถ้ามี)</li>
+        <li>สมุดบัญชีย้อนหลัง 6 เดือน</li>
+        <li>หลักฐานรายได้/หนังสือรับรองเงินเดือน</li>
+        <li>กรณีนิติบุคคล: หนังสือรับรองบริษัท + ใบ ภ.พ.20</li>
+        <li>เจ้าของกิจการ: หนังสือรับรองบริษัทอายุไม่เกิน 3 เดือน</li>`;
+      document.getElementById('ol_steps').innerHTML = `
+        <li>เลือกธนาคาร/ไฟแนนซ์ที่เหมาะสม (พิจารณาอัตราดอกเบี้ยและเงื่อนไข)</li>
+        <li>เตรียมเอกสารและยื่นคำขอ</li>
+        <li>ฝ่ายประเมินตรวจสอบ (โดยมากไม่เกิน ~7 วันทำการ)</li>
+        <li>ได้รับผลอนุมัติและทำสัญญากู้</li>
+        <li>รับรถยนต์และสำเนาทะเบียน (เล่มจริงอยู่กับไฟแนนซ์จนผ่อนครบ)</li>`;
+      document.getElementById('ul_tips').innerHTML = `
+        <li>เช็กค่าธรรมเนียมแฝง (ทำสัญญา, ปิดก่อนกำหนด, ค่าทวงถาม) ให้ครบก่อนเซ็น</li>
+        <li>ผ่อนให้ตรงเวลาเพื่อรักษาเครดิต และป้องกันค่าใช้จ่ายส่วนเพิ่ม</li>
+        <li>หากมีปัญหาการเงิน ให้รีบติดต่อไฟแนนซ์เพื่อปรับโครงสร้างหนี้/ขอพักชำระ</li>`;
+    }
+    function setListEN() {
+      document.getElementById('ul_docs').innerHTML = `
+        <li>4 copies of national ID (or government officer ID)</li>
+        <li>4 copies of house registration</li>
+        <li>Marriage certificate (if any)</li>
+        <li>Bank statements for the last 6 months</li>
+        <li>Proof of income / employment certificate</li>
+        <li>For companies: company certificate + VAT registration</li>
+        <li>For business owners: company certificate issued within 3 months</li>`;
+      document.getElementById('ol_steps').innerHTML = `
+        <li>Select a suitable lender (compare rates & conditions)</li>
+        <li>Prepare documents and submit the application</li>
+        <li>Credit assessment (usually within ~7 business days)</li>
+        <li>Approval & contract signing</li>
+        <li>Receive the car and copy of the registration book (original kept by lender until completion)</li>`;
+      document.getElementById('ul_tips').innerHTML = `
+        <li>Check hidden fees (contract, early settlement, collection fees) before signing</li>
+        <li>Pay on time to protect your credit and avoid extra charges</li>
+        <li>If in difficulty, contact the lender early to restructure or defer payments</li>`;
+    }
+
+    function applyLang(){
+      const lang = document.getElementById('lang').value || 'th';
+      const t = T[lang];
+
+      // ข้อความหลัก
+      document.getElementById('brand').innerText = t.brand;
+      document.getElementById('backBtn').innerText = (lang==='th') ? T.th.back : T.en.back;
+      document.getElementById('kicker').innerText = t.kicker;
+      document.getElementById('title').innerText = t.title;
+      document.getElementById('intro').innerText = t.intro;
+
+      document.getElementById('cap1').innerText = t.cap1;
+      document.getElementById('h_overview').innerText = t.h_overview;
+      document.getElementById('p_overview_1').innerText = t.p_overview_1;
+
+      document.getElementById('h_before').innerText = t.h_before;
+      document.getElementById('h_bank').innerText = t.h_bank;
+      document.getElementById('p_bank').innerText = t.p_bank;
+      document.getElementById('h_rate').innerText = t.h_rate;
+      document.getElementById('p_rate_1').innerText = t.p_rate_1;
+      document.querySelector('.tip').innerText = (lang==='th') ? T.th.tip_20rule : T.en.tip_20rule;
+      document.getElementById('h_calc').innerText = t.h_calc;
+      document.getElementById('p_calc_1').innerText = t.p_calc_1;
+      document.getElementById('h_used').innerText = t.h_used;
+      document.getElementById('p_used_1').innerText = t.p_used_1;
+
+      document.getElementById('cap2').innerText = t.cap2;
+      document.getElementById('h_require').innerText = t.h_require;
+      document.getElementById('h_qual').innerText = t.h_qual;
+      document.getElementById('p_qual').innerText = t.p_qual;
+      document.getElementById('h_docs').innerText = t.h_docs;
+      document.getElementById('h_steps').innerText = t.h_steps;
+      document.getElementById('cap3').innerText = t.cap3;
+      document.getElementById('h_tips').innerText = t.h_tips;
+      document.getElementById('foot').innerText = t.foot;
+
+      // รายการ UL/OL ตามภาษา
+      (lang==='th') ? setListTH() : setListEN();
+
+      // รูปภาพตามภาษา
+      document.getElementById('img1').src = IMG[lang].comp;
+      document.getElementById('img2').src = IMG[lang].prevent;
+      document.getElementById('img3').src = IMG[lang].compare;
+
+      // ปรับ lang บน <html> และจดจำการตั้งค่า
+      document.documentElement.lang = lang;
+      localStorage.setItem('lang', lang);
+    }
+
+    // เริ่มต้นด้วยค่าที่เคยเลือก
+    (function init(){
+      const saved = localStorage.getItem('lang') || 'th';
+      document.getElementById('lang').value = saved;
+      applyLang();
+    })();
+  </script>
+</body>
+</html>

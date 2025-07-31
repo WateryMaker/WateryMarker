@@ -82,11 +82,13 @@
         <h3 data-i18n="cards.interestRates.title">Interest Rates</h3>
         <p data-i18n="cards.interestRates.body">Understand interest, principal, and installment payments.</p>
       </div>
+      <a class="card-link" href="car-loan.html">
       <div class="knowledge-card">
         <div class="center-icon"><i class="fas fa-car fa-2x" style="color:#10b981;"></i></div>
         <h3 data-i18n="cards.carLoans.title">Car Loans</h3>
         <p data-i18n="cards.carLoans.body">Loan information for new/used car purchases.</p>
       </div>
+      </a>
       <div class="knowledge-card">
         <div class="center-icon"><i class="fas fa-house-user fa-2x" style="color:#10b981;"></i></div>
         <h3 data-i18n="cards.homeLoans.title">Home Loans</h3>
@@ -167,53 +169,130 @@
   </section>
 
   <!-- Language Script -->
-  <script>
-    const I18N = {/* …เหมือนเดิมทั้งหมด… */};
-    function applyLanguage() {
-      const lang = document.getElementById("language-select").value || "en";
-      const dict = I18N[lang] || I18N.en;
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        const val = dict[key];
-        if (typeof val === "string") el.innerHTML = val;
-      });
-      document.documentElement.lang = lang;
-      document.title = "MindMyMoney";
-      localStorage.setItem('language', lang);
-      localStorage.setItem('lang', lang);
+  <!-- Language Script -->
+<script>
+  // === Dictionary: EN & TH ===
+  const I18N = {
+    en: {
+      "brand.name": "MindMyMoney",
+      "nav.login": "Login",
+
+      "hero.headline": "Start planning your financial future",
+      "hero.subtitle": "A financial planning website for everyone<br>Start changing your financial future today!",
+      "hero.cta": "Get Started",
+
+      "section1.title": "Financial Knowledge",
+      "cards.loan.title": "Loan",
+      "cards.loan.body": "Understand types of loans, conditions, and precautions.",
+      "cards.installments.title": "Installments",
+      "cards.installments.body": "Secrets to safe installment payments without falling into debt.",
+      "cards.interestRates.title": "Interest Rates",
+      "cards.interestRates.body": "Understand interest, principal, and installment payments.",
+      "cards.carLoans.title": "Car Loans",
+      "cards.carLoans.body": "Loan information for new/used car purchases.",
+      "cards.homeLoans.title": "Home Loans",
+      "cards.homeLoans.body": "Prepare for a mortgage, calculate down payment.",
+      "cards.creditCard.title": "What is a Credit Card?",
+      "cards.creditCard.body": "Pros and cons, how to use safely, avoid high interest.",
+      "cards.scamAwareness.title": "Financial Scams Awareness",
+      "cards.scamAwareness.body": "How to protect yourself from fraud, cyber risks, and system loopholes.",
+      "cards.pensionFunds.title": "Gratuity & Pension Funds",
+      "cards.pensionFunds.body": "Understand the meaning of gratuity and growing pension funds.",
+      "cards.loanAgreement.title": "Loan Agreement",
+      "cards.loanAgreement.body": "Components and principles of loans and key conditions to review before signing any loan contract.",
+
+      "section2.title": "Money Tips for You",
+      "cards.loanBasics.title": "Loan Basics",
+      "cards.loanBasics.body": "Understand loan definitions, types of credit, and precautions for beginners.",
+      "cards.debtRestructuring.title": "Debt Restructuring",
+      "cards.debtRestructuring.body": "Methods and techniques to restructure debt responsibly.",
+      "cards.installmentPlanning.title": "Installment Planning",
+      "cards.installmentPlanning.body": "Monthly installment strategies with practical examples.",
+      "cards.carHomeLoans.title": "Car/Home Loans",
+      "cards.carHomeLoans.body": "Steps to apply for auto/home loans and compare pros & cons.",
+      "cards.spendingSaving.title": "Spending & Saving Plan",
+      "cards.spendingSaving.body": "Monthly budgeting and savings goals.",
+      "cards.creditCard2.title": "What is a Credit Card?",
+      "cards.creditCard2.body": "Pros and cons, safe usage, and avoiding high interest.",
+      "cards.scamAwareness2.title": "Financial Scam Awareness",
+      "cards.scamAwareness2.body": "Avoid scams, cyber threats, and informal loans.",
+      "cards.compoundInterest.title": "Compound Interest",
+      "cards.compoundInterest.body": "Understand how compound interest works."
+    },
+
+    th: {
+      "brand.name": "MindMyMoney",
+      "nav.login": "เข้าสู่ระบบ",
+
+      "hero.headline": "เริ่มวางแผนการเงินเพื่ออนาคตของคุณ",
+      "hero.subtitle": "เว็บไซต์วางแผนการเงินสำหรับทุกคน<br>เริ่มเปลี่ยนอนาคตทางการเงินของคุณได้ตั้งแต่วันนี้!",
+      "hero.cta": "เริ่มต้นใช้งาน",
+
+      "section1.title": "คลังความรู้การเงิน",
+      "cards.loan.title": "เงินกู้",
+      "cards.loan.body": "ทำความเข้าใจประเภทเงินกู้ เงื่อนไข และข้อควรระวัง",
+      "cards.installments.title": "ผ่อนชำระ",
+      "cards.installments.body": "เคล็ดลับผ่อนให้ปลอดภัย ไม่ตกหลุมหนี้",
+      "cards.interestRates.title": "อัตราดอกเบี้ย",
+      "cards.interestRates.body": "ทำความเข้าใจดอกเบี้ย เงินต้น และค่างวด",
+      "cards.carLoans.title": "สินเชื่อรถ",
+      "cards.carLoans.body": "ข้อมูลกู้ซื้อรถใหม่/มือสอง",
+      "cards.homeLoans.title": "สินเชื่อบ้าน",
+      "cards.homeLoans.body": "เตรียมตัวกู้บ้าน คำนวณเงินดาวน์",
+      "cards.creditCard.title": "บัตรเครดิตคืออะไร?",
+      "cards.creditCard.body": "ข้อดีข้อเสีย วิธีใช้ให้ปลอดภัย เลี่ยงดอกเบี้ยสูง",
+      "cards.scamAwareness.title": "รู้เท่าทันมิจฉาชีพการเงิน",
+      "cards.scamAwareness.body": "วิธีป้องกันการฉ้อโกง ความเสี่ยงไซเบอร์ และช่องโหว่ระบบ",
+      "cards.pensionFunds.title": "บำเหน็จ & บำนาญ",
+      "cards.pensionFunds.body": "เข้าใจความหมายของบำเหน็จและการเติบโตของกองทุนบำนาญ",
+      "cards.loanAgreement.title": "สัญญาเงินกู้",
+      "cards.loanAgreement.body": "องค์ประกอบ หลักการ และเงื่อนไขสำคัญที่ควรตรวจสอบก่อนลงนาม",
+
+      "section2.title": "ทริคการเงินสำหรับคุณ",
+      "cards.loanBasics.title": "พื้นฐานสินเชื่อ",
+      "cards.loanBasics.body": "ความหมายสินเชื่อ ประเภทของเครดิต และข้อควรระวังสำหรับมือใหม่",
+      "cards.debtRestructuring.title": "ปรับโครงสร้างหนี้",
+      "cards.debtRestructuring.body": "วิธีและเทคนิคปรับหนี้อย่างรับผิดชอบ",
+      "cards.installmentPlanning.title": "วางแผนค่างวด",
+      "cards.installmentPlanning.body": "กลยุทธ์ผ่อนรายเดือนพร้อมตัวอย่างใช้งานจริง",
+      "cards.carHomeLoans.title": "สินเชื่อรถ/บ้าน",
+      "cards.carHomeLoans.body": "ขั้นตอนยื่นกู้และเทียบข้อดี‑ข้อเสีย",
+      "cards.spendingSaving.title": "แผนใช้จ่าย & ออม",
+      "cards.spendingSaving.body": "วางงบรายเดือนและเป้าหมายเงินออม",
+      "cards.creditCard2.title": "บัตรเครดิตคืออะไร?",
+      "cards.creditCard2.body": "ข้อดีข้อเสีย วิธีใช้ให้ปลอดภัย และเลี่ยงดอกเบี้ยสูง",
+      "cards.scamAwareness2.title": "รู้เท่าทันมิจฉาชีพการเงิน",
+      "cards.scamAwareness2.body": "หลีกเลี่ยงมิจฉาชีพ ภัยไซเบอร์ และหนี้นอกระบบ",
+      "cards.compoundInterest.title": "ดอกเบี้ยทบต้น",
+      "cards.compoundInterest.body": "ทำความเข้าใจการทำงานของดอกเบี้ยทบต้น"
     }
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("language-select").value = "en";
-      applyLanguage();
+  };
+
+  // === Apply language ===
+  function applyLanguage() {
+    const select = document.getElementById("language-select");
+    const lang = (select && select.value) || "en";
+    const dict = I18N[lang] || I18N.en;
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      const val = dict[key];
+      if (typeof val === "string") el.innerHTML = val;
     });
-  </script>
 
-  <!-- MMM PATCH: Guest Get-Started (robust relative navigation) -->
-  <script>
-    (function () {
-      const btn = document.getElementById('hero-btn');
-      const anchor = btn ? btn.closest('a') : null;
+    document.documentElement.lang = lang;
+    document.title = "MindMyMoney";
 
-      // CHANGED: fallback เป็น dashboard.php
-      const targetHref = (anchor && anchor.getAttribute('href')) || 'dashboard.php'; // CHANGED
+    // persist for other pages / sessions
+    localStorage.setItem("language", lang);
+    localStorage.setItem("lang", lang);
+  }
 
-      function goGuest(e) {
-        if (e) e.preventDefault();
-        localStorage.setItem('mmm_session', 'guest');
-        localStorage.setItem('mmm_user', 'Guest');
-        const lang = document.getElementById('language-select')?.value || 'en';
-        localStorage.setItem('language', lang);
-        localStorage.setItem('lang', lang);
-
-        const url = new URL(targetHref, window.location.href);
-        window.location.assign(url.href);
-      }
-
-      if (btn) btn.addEventListener('click', goGuest);
-      if (anchor) anchor.addEventListener('click', goGuest);
-    })();
-  </script>
-  <!-- /MMM PATCH -->
-
-</body>
-</html>
+  // === Initialize: use saved language if any ===
+  document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("lang") || localStorage.getItem("language") || "en";
+    const select = document.getElementById("language-select");
+    if (select) select.value = saved;
+    applyLanguage();
+  });
+</script>
